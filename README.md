@@ -4,7 +4,7 @@ This markdown describes the R code employed for my FYP. It is far from perfect, 
 First, we call the libraries and load the data. I use the NBER recession probability index, Shadow rate, ACM Dataset, EBP Dataset. The first can be download from Fred, the other data series can be found in their author's webpages. 
 
 ```markdown
-`setwd("C:/Users/Hewlett Packard/Desktop/TFG")
+setwd("C:/Users/Hewlett Packard/Desktop/TFG")
 source('utilities.R')
 library(plotly)
 library(InformationValue)
@@ -62,14 +62,14 @@ DATA <- data.frame(dates, USREC[1622:1932,2], mydata[344:654,2:31],
 
 plot_ly(DATA,x=~dates, y=~MYSPREAD)
 
-View(DATA)`
+View(DATA)
 ```
 Once we have our dataset we compute lagged variables for our different independent variables. We will need them in order to build our models. Here I also plot a dynamic multiplier in order to see the most significant lags. We may want to use them in our probits.
 
 
 ```markdown
 
-`DATA <- slide(DATA, Var = "ShadowSpread", slideBy = -12)
+DATA <- slide(DATA, Var = "ShadowSpread", slideBy = -12)
 DATA <- slide(DATA, Var = "ShadowSpread", slideBy = -14)
 DATA <- slide(DATA, Var = "ShadowSpread", slideBy = -16)
 DATA <- slide(DATA, Var = "ShadowSpread", slideBy = -24)
@@ -133,13 +133,13 @@ abline(h=0,lwd=2)
 
 plot_ly(DATA, x=~dates, y=~ShadowSpread, name='Shadow Rate Spread' ,type = 'scatter', mode = 'lines')%>%
   add_trace(y=~DATA$`Rspread`, name='Risk Free R Spread')%>%
-  add_trace(y=~DATA$TPspread, name='Term Premium Spread') `
+  add_trace(y=~DATA$TPspread, name='Term Premium Spread') 
 ```
 
 Know we take a look at different in sample specifications of our probit models. We also compute Newey West standard errors and plot all the fitted in sample predicted probabilities of recession.
 
 ```Markdown
-`probit <- glm(DATA$USREC.1622.1932..2. ~ `ShadowSpread-14`,family=binomial(link="probit"), data=DATA)
+probit <- glm(DATA$USREC.1622.1932..2. ~ `ShadowSpread-14`,family=binomial(link="probit"), data=DATA)
 coef(probit)        
 summary(probit)
 
@@ -183,13 +183,13 @@ plot_ly(DATA, y=~pred1,x=~dates,name = 'Shadow Spread', type = 'scatter', mode =
   add_trace(y=~pred3, name = 'model 3')%>%
   layout(title = "In Sample predicted probabilities",
          xaxis = list(title = "Dates"),
-         yaxis = list (title = "US NBER Recession"))`
+         yaxis = list (title = "US NBER Recession"))
 ```
 Now I run the models out of sample. Compute the estimated probabilities of recession and compare the results with the realized values. I compute R-squared and AUROC. I also plot Cummulative Sum of errors of every model and the receiver operating characteristic.
 
 ```Markdown
 ##OUTOF SAMPLE
-`T <- length(DATA$dates)
+T <- length(DATA$dates)
 
 
 is <- as.Date(DATA$dates) < as.Date('2006-01-01') 
@@ -340,13 +340,13 @@ plot_ly(roc_df2, y=~roc_df2$TPR, x=~roc_df2$FPR, type = 'scatter', mode = 'lines
 plot_ly(roc_df3, y=~roc_df3$TPR, x=~roc_df3$FPR, type = 'scatter', mode = 'lines' )%>%
   layout(title = "Receiver Operating Characteristic",
          xaxis = list(title = "FPR"),
-         yaxis = list (title = "TPR"))`
+         yaxis = list (title = "TPR"))
 ```
 
 We move into GAM models. I haven't plot the results for before and after the Great Moderation because I used to different R files and it could be confusing to put it all toghether because of the way I call the variables. But you can just look at the whole series or just at data after the 1990s, compare results and see how it changes. I let you do it as an exercise.
 
 ```Markdown
-`
+
 library(mgcv)
 library(mgcViz)
 
@@ -394,7 +394,7 @@ plot_ly(A,x=~A$dates,y=~A$gamobj1.fitted.values.1.297.,name='GAM Model 3',
          yaxis = list (title = "US NBER Recession"))%>%
   add_trace(y=~A$pred1.15.311., name='Shadow Spread')%>%
   add_trace(y=~A$gamobj3.fitted.values.1.297., name='GAM Shadow Spread')%>%
-  add_trace(y=~A$pred3.15.311., name='Model 3')`
+  add_trace(y=~A$pred3.15.311., name='Model 3')
 ```
 
 For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
